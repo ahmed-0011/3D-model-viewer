@@ -1,0 +1,14 @@
+body,
+html,
+#root {
+    height: 100vh;
+}
+
+body {
+    margin: 0;
+}
+
+.mantine-ScrollArea-viewport > div {
+    display: block !important;
+    height: 100%;
+}

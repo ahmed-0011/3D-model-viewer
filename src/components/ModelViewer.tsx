@@ -74,57 +74,50 @@ const ModelViewer: FC = () => {
     }, []);
 
     return (
-        <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onReset={() => {
-                displayDefaultModel();
+        <CanvasContainer
+            ref={el => {
+                toggleRef(el);
+                canvasContainerRef.current = el;
             }}
         >
-            <CanvasContainer
-                ref={el => {
-                    toggleRef(el);
-                    canvasContainerRef.current = el;
-                }}
-            >
-                <Canvas dpr={[1, 2]} shadows camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 3] }}>
-                    <pointLight position={[-10, -10, -10]} />
-                    <hemisphereLight intensity={1} />
-                    <Suspense fallback={null}>
+            <Canvas dpr={[1, 2]} shadows camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 3] }}>
+                <pointLight position={[-10, -10, -10]} />
+                <hemisphereLight intensity={1} />
+                <Suspense fallback={null}>
+                    <ErrorBoundary
+                        FallbackComponent={ErrorFallback}
+                        onReset={() => {
+                            displayDefaultModel();
+                        }}
+                    >
                         <Model wireframe={settingsSnapshot.wireframe} resetOrbitController={resetOrbitController} />
-                    </Suspense>
-                    <OrbitControls
-                        ref={orbitControllerRef}
-                        autoRotate={settingsSnapshot.autoRotate}
-                        enablePan={false}
-                    />
-                    {settingsSnapshot.grid && (
-                        <gridHelper
-                            args={[15, 15, `white`, `gray`]}
-                            position={[0, settingsSnapshot.gridPositionY, 0]}
-                        />
-                    )}
-                    {settingsSnapshot.axes && <axesHelper position={[0, settingsSnapshot.gridPositionY - 0.01, 0]} />}
-                    {settingsSnapshot.stats && <Stats showPanel={0} parent={canvasContainerRef} />}
-                </Canvas>
-                <ActionIcon
-                    variant="transparent"
-                    title="toggle fullscreen"
-                    size={"lg"}
-                    onClick={() => void toggleFullscreen()}
-                >
-                    {fullscreen ? <IconMinimize size={40} /> : <IconMaximize size={40} />}
-                </ActionIcon>
+                    </ErrorBoundary>
+                </Suspense>
+                <OrbitControls ref={orbitControllerRef} autoRotate={settingsSnapshot.autoRotate} enablePan={false} />
+                {settingsSnapshot.grid && (
+                    <gridHelper args={[15, 15, `white`, `gray`]} position={[0, settingsSnapshot.gridPositionY, 0]} />
+                )}
+                {settingsSnapshot.axes && <axesHelper position={[0, settingsSnapshot.gridPositionY - 0.01, 0]} />}
+                {settingsSnapshot.stats && <Stats showPanel={0} parent={canvasContainerRef} />}
+            </Canvas>
+            <ActionIcon
+                variant="transparent"
+                title="toggle fullscreen"
+                size={"lg"}
+                onClick={() => void toggleFullscreen()}
+            >
+                {fullscreen ? <IconMinimize size={40} /> : <IconMaximize size={40} />}
+            </ActionIcon>
 
-                <ZoomButtonsContainer>
-                    <ActionIcon title="ZoomIn" size={"lg"} onClick={() => (viewerSettings.zoom = new String("In"))}>
-                        <IconZoomIn size={40} />
-                    </ActionIcon>
-                    <ActionIcon title="ZoomOut" size={"lg"} onClick={() => (viewerSettings.zoom = new String("Out"))}>
-                        <IconZoomOut size={40} />
-                    </ActionIcon>
-                </ZoomButtonsContainer>
-            </CanvasContainer>
-        </ErrorBoundary>
+            <ZoomButtonsContainer>
+                <ActionIcon title="ZoomIn" size={"lg"} onClick={() => (viewerSettings.zoom = new String("In"))}>
+                    <IconZoomIn size={40} />
+                </ActionIcon>
+                <ActionIcon title="ZoomOut" size={"lg"} onClick={() => (viewerSettings.zoom = new String("Out"))}>
+                    <IconZoomOut size={40} />
+                </ActionIcon>
+            </ZoomButtonsContainer>
+        </CanvasContainer>
     );
 };
 

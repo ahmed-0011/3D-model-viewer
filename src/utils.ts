@@ -21,7 +21,8 @@ export const uploadModel = async () => {
 
         resetModelAnimations();
 
-        const extension = modelFile.name.substring(modelFile.name.lastIndexOf(".") + 1) as ModelExtension;
+        const extension = modelFile.name.toLowerCase().substring(modelFile.name.lastIndexOf(".") + 1) as ModelExtension;
+
         const modelURL = URL.createObjectURL(new Blob([modelFile]));
         const modelSize = modelFile.size / BYTES_IN_MEGABYTE;
 

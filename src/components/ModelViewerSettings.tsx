@@ -3,10 +3,11 @@ import styled from "@emotion/styled";
 import { ScrollArea as MantineScrollArea, Group, MantineTheme } from "@mantine/core";
 import SwitchList from "@components/SwitchList";
 import UploadButton from "@components/Button/UploadButton";
-import { uploadModel } from "@/utils";
+import { openFilePicker } from "@/utils";
 import AnimationSelect from "@components/AnimationSelect";
 import ModelData from "@components/ModelData";
 import ColorsSchemeSwitch from "@components/Switch/ColorsSchemeSwitch";
+import { Icon3dCubeSphere } from "@tabler/icons";
 
 const SettingsContainer = styled.div`
     display: flex;
@@ -41,7 +42,7 @@ const ScrollArea = styled(MantineScrollArea)`
 
 const ModelUploader: FC = () => {
     const handleClick = () => {
-        void uploadModel();
+        void openFilePicker();
     };
 
     return (
@@ -57,7 +58,9 @@ const ModelUploader: FC = () => {
                         <ModelData />
                     </SceneSettings>
                 </ScrollArea>
-                <UploadButton onClick={handleClick}>Upload Model</UploadButton>
+                <UploadButton onClick={handleClick} leftIcon={<Icon3dCubeSphere size={24} />}>
+                    Upload Model
+                </UploadButton>
             </SettingsContainer>
         </>
     );

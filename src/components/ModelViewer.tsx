@@ -10,6 +10,8 @@ import { MantineTheme, ActionIcon } from "@mantine/core";
 import styled from "@emotion/styled";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { IconMaximize, IconMinimize, IconZoomIn, IconZoomOut } from "@tabler/icons";
+import { Dropzone } from "@mantine/dropzone";
+import { updateModel } from "@/utils";
 
 const CanvasContainer = styled.div`
     display: grid;
@@ -74,50 +76,68 @@ const ModelViewer: FC = () => {
     }, []);
 
     return (
-        <CanvasContainer
-            ref={el => {
-                toggleRef(el);
-                canvasContainerRef.current = el;
+        <Dropzone
+            onDrop={files => {
+                const modelFile: File = files[0];
+                updateModel(modelFile);
             }}
+            activateOnClick={false}
+            styles={{ root: { cursor: "default", padding: 0, border: "none" }, inner: { pointerEvents: "all" } }}
+            accept={[".gltf", ".glb", ".fbx"]}
+            multiple={false}
         >
-            <Canvas dpr={[1, 2]} shadows camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 3] }}>
-                <pointLight position={[-10, -10, -10]} />
-                <hemisphereLight intensity={1} />
-                <Suspense fallback={null}>
-                    <ErrorBoundary
-                        FallbackComponent={ErrorFallback}
-                        onReset={() => {
-                            displayDefaultModel();
-                        }}
-                    >
-                        <Model wireframe={settingsSnapshot.wireframe} resetOrbitController={resetOrbitController} />
-                    </ErrorBoundary>
-                </Suspense>
-                <OrbitControls ref={orbitControllerRef} autoRotate={settingsSnapshot.autoRotate} enablePan={false} />
-                {settingsSnapshot.grid && (
-                    <gridHelper args={[15, 15, `white`, `gray`]} position={[0, settingsSnapshot.gridPositionY, 0]} />
-                )}
-                {settingsSnapshot.axes && <axesHelper position={[0, settingsSnapshot.gridPositionY - 0.01, 0]} />}
-                {settingsSnapshot.stats && <Stats showPanel={0} parent={canvasContainerRef} />}
-            </Canvas>
-            <ActionIcon
-                variant="transparent"
-                title="toggle fullscreen"
-                size={"lg"}
-                onClick={() => void toggleFullscreen()}
+            <CanvasContainer
+                ref={el => {
+                    toggleRef(el);
+                    canvasContainerRef.current = el;
+                }}
             >
-                {fullscreen ? <IconMinimize size={40} /> : <IconMaximize size={40} />}
-            </ActionIcon>
+                <Canvas dpr={[1, 2]} shadows camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 3] }}>
+                    <pointLight position={[-10, -10, -10]} />
+                    <hemisphereLight intensity={1} />
+                    <Suspense fallback={null}>
+                        <ErrorBoundary
+                            FallbackComponent={ErrorFallback}
+                            onReset={() => {
+                                displayDefaultModel();
+                            }}
+                        >
+                            <Model wireframe={settingsSnapshot.wireframe} resetOrbitController={resetOrbitController} />
+                        </ErrorBoundary>
+                    </Suspense>
+                    <OrbitControls
+                        ref={orbitControllerRef}
+                        autoRotate={settingsSnapshot.autoRotate}
+                        enablePan={false}
+                    />
+                    {settingsSnapshot.grid && (
+                        <gridHelper
+                            args={[15, 15, `white`, `gray`]}
+                            position={[0, settingsSnapshot.gridPositionY, 0]}
+                        />
+                    )}
+                    {settingsSnapshot.axes && <axesHelper position={[0, settingsSnapshot.gridPositionY - 0.01, 0]} />}
+                    {settingsSnapshot.stats && <Stats showPanel={0} parent={canvasContainerRef} />}
+                </Canvas>
+                <ActionIcon
+                    variant="transparent"
+                    title="toggle fullscreen"
+                    size={"lg"}
+                    onClick={() => void toggleFullscreen()}
+                >
+                    {fullscreen ? <IconMinimize size={40} /> : <IconMaximize size={40} />}
+                </ActionIcon>
 
-            <ZoomButtonsContainer>
-                <ActionIcon title="ZoomIn" size={"lg"} onClick={() => (viewerSettings.zoom = new String("In"))}>
-                    <IconZoomIn size={40} />
-                </ActionIcon>
-                <ActionIcon title="ZoomOut" size={"lg"} onClick={() => (viewerSettings.zoom = new String("Out"))}>
-                    <IconZoomOut size={40} />
-                </ActionIcon>
-            </ZoomButtonsContainer>
-        </CanvasContainer>
+                <ZoomButtonsContainer>
+                    <ActionIcon title="ZoomIn" size={"lg"} onClick={() => (viewerSettings.zoom = new String("In"))}>
+                        <IconZoomIn size={40} />
+                    </ActionIcon>
+                    <ActionIcon title="ZoomOut" size={"lg"} onClick={() => (viewerSettings.zoom = new String("Out"))}>
+                        <IconZoomOut size={40} />
+                    </ActionIcon>
+                </ZoomButtonsContainer>
+            </CanvasContainer>
+        </Dropzone>
     );
 };
 
